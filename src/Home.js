@@ -71,17 +71,21 @@ class Home extends Component {
         <form class="form align-items-center">
           <div class="form-group mx-auto w-25">
             <label class="sr-only" for="email">Email address</label>
-            <input type="email" class="form-control" name="email" value={this.state.email} id="email" onChange={this.handleChange}></input>
+            <input type="email" class="form-control" placeholder="Email" name="email" value={this.state.email} id="email" onChange={this.handleChange}></input>
           </div>
            <div class="form-group mx-auto w-25">
             <label class="sr-only" for="password">Password</label>
-            <input type="password" class="form-control" name = "password" value={this.state.password} id="password" onChange={this.handleChange}></input>
+            <input type="password" class="form-control" placeholder="Password" name= "password" value={this.state.password} id="password" onChange={this.handleChange}></input>
           </div>
-          <div class="form-group mx-auto w-25">
-            <button id="sign-up" class="button--accent btn-dark" onClick={this.handleSignUp}>Sign up</button>
-          </div>
-          <div class="form-group mx-auto w-25">
-            <button id="login" class="button--accent btn-dark " onClick={this.handleSubmit}>Sign in</button>
+          <div class="text-center">
+            <div class="btn-group col-md-3 align-items-center">
+              <div class="btn">
+                <button id="sign-up" class="button--accent btn-dark" onClick={this.handleSignUp}>Sign up</button>
+              </div>
+              <div class="btn">
+                <button id="login" class="button--accent btn-dark " onClick={this.handleSubmit}>Sign in</button>
+              </div>
+            </div>
           </div>
         </form>
         <div class="text-center">Or</div><br></br>
