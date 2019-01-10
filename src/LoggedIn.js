@@ -6,9 +6,16 @@ import './LoggedIn.css'
 class LoggedIn extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      email: '',
-      uid: ''
+    const user = firebase.auth().currentUser;
+
+    this.currentUser = {};
+
+    if (user != null) {
+      this.currentUser.name = user.displayName;
+      this.currentUser.email = user.email;
+      this.currentUser.photoUrl = user.photoURL;
+      this.currentUser.emailVerified = user.emailVerified;
+      this.currentUser.uid = user.uid;
     }
   }
 
@@ -17,7 +24,11 @@ class LoggedIn extends Component {
       <div class="container">
         <div class="jumbotron mt-2">
           <div class="text-center">
-            <p>User Details</p>
+            <p>{this.currentUser.name}</p>
+            <p>{this.currentUser.email}</p>
+            <img src={this.currentUser.photoUrl}/>
+            <p>{this.currentUser.emailVerified}</p>
+            <p>{this.currentUser.uid}</p>
           </div>
         </div>
       </div>
