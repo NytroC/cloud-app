@@ -90,9 +90,7 @@ class LoggedIn extends Component {
       </div>
     );
   };
-  createOne = (e) => {
-    e.preventDefault();
-    // we could await this promise, and re-set state, but firebase will just update it for us
+  createOne = () => {
     const id = uuid();
     firebase.database().ref('notes/').once('value', snapShot => {
       this.setState({ data: snapShot.val() })
@@ -105,8 +103,6 @@ class LoggedIn extends Component {
   };
 
   deleteOne = () => {
-    // e.preventDefault();
-    console.log("hey")
     firebase.database().ref('notes/').once('value', snapShot => {
       this.setState({ data: snapShot.val() })
     });
@@ -117,9 +113,7 @@ class LoggedIn extends Component {
     }
   };
 
-  updateOne = (e) => {
-    e.preventDefault();
-    console.log("hey")
+  updateOne = () => {
     firebase.database().ref('notes/').once('value', snapShot => {
       this.setState({ data: snapShot.val() })
     });
