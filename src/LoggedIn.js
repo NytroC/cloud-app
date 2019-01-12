@@ -4,18 +4,32 @@ import ReactDOM from 'react-dom';
 import './LoggedIn.css'
 import uuid from 'uuid/v4';
 
-const words = [
-  'spoon',
-  'fish',
-  'wish',
-  'squish',
-  'squash',
-  'wash',
-  'tuna',
-  'elephant',
-  'panda',
-  'koala',
-  'iguana'
+const titles = [
+  'Fortnite',
+  'World of Warcraft',
+  'God of War',
+  'FIFA 19',
+  'Minecraft',
+  'Atlas',
+  'Battlfield V',
+  'Assassin\'s Creed',
+  'PUBG',
+  'Red Dead Redemption 2',
+  'Overwatch'
+]
+
+const notes_body = [
+  'At the very least, it provides blistering firefights and brilliantly crafted worlds to have them in.',
+  'Unquestionably 2018\'s best game, and an all-time open-world masterpiece.',
+  'It\'s hard to say that this even can be classified as a game. ',
+  'Fun to play with friends, not so much on your own.',
+  'Despite some very annoying bugs that absolutely need to be addressed, the game is both a wonderful online experience and an underrated solo adventure if you enjoy the exploration aspect of games such as No Man’s Sky.',
+  'Masterpiece. The world within game is so detailed and beautiful.',
+  'This game is so historically innacurate it ruins my immersion, its not fun to play as a history major when you know nothing of this happened.',
+  'I wanted to like the game, I hoped the new direction would bring the series to a new level, but instead, the whole thing blew up in my face like a Marshmallow Peep left in the microwave too long.',
+  'You can feel the love Insomniac put into this game, and it goes a long way.',
+  'The only thing this game has going for it is the art direction and world.',
+  'Just your typical, not ready for release, trash'
 ]
 
 
@@ -96,8 +110,8 @@ class LoggedIn extends Component {
       this.setState({ data: snapShot.val() })
     });
     firebase.database().ref(`notes/${id}`).set({
-      title: words[Math.floor(Math.random() * Math.floor(words.length))],
-      body: words[Math.floor(Math.random() * Math.floor(words.length))]
+      title: titles[Math.floor(Math.random() * Math.floor(titles.length))],
+      body: notes_body[Math.floor(Math.random() * Math.floor(notes_body.length))]
     });
     this.setState();
   };
@@ -119,8 +133,8 @@ class LoggedIn extends Component {
     });
     const first = Object.keys(this.state.data)[0];
     firebase.database().ref(`notes/${first}`).update({
-      title: words[Math.floor(Math.random() * Math.floor(words.length))],
-      body: words[Math.floor(Math.random() * Math.floor(words.length))]
+      title: titles[Math.floor(Math.random() * Math.floor(titles.length))],
+      body: notes_body[Math.floor(Math.random() * Math.floor(notes_body.length))]
     });
   };
 
