@@ -59,7 +59,6 @@ class LoggedIn extends Component {
           <button onClick={this.deleteOne}>Delete One</button>
         </div>
         {this.state.loaded ? this.renderTitles() : null}
-
       </div>
     );
   }
@@ -150,6 +149,7 @@ class LoggedIn extends Component {
     if(this.state.index != 0){
       currentNote.child("images").push({name: file.name});
       storage.child(`images/${this.state.index}/${file.name}`).put(file).then(() => {
+          this.setImages();
       });
     } else {
       console.log("no note selected");
