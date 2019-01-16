@@ -10,7 +10,8 @@
 
 # production
 /build
-
+src/firebase.js
+.firebase/hosting.YnVpbGQ.cache
 
 # misc
 .DS_Store
