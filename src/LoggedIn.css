@@ -5,8 +5,7 @@ html,body,.LoggedIn,{
   height: 400px;
 }
 img{
-  margin-top: 25px;
-  margin-bottom: 25px;
+  margin: 20px;
   width:100px;
   height:100px;
 }

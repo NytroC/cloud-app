@@ -90,7 +90,11 @@ class LoggedIn extends Component {
          <div id="note-body">
             <p>{data[this.state.index] ? JSON.stringify(data[this.state.index].body): "Click Note"}</p>
          </div>
-         <img src={this.state.imageURL}/>
+         {this.state.imageURLs.map((url) => {
+           return(
+             <img src={url}/>
+           )
+         })}
          <div class='form-upload'>
            <input id="file-select" type='file' onChange={this.handleFileSelect}/>
            <button id="upload-button" onClick={this.fileUpload}>Upload</button>
@@ -145,24 +149,23 @@ class LoggedIn extends Component {
     const currentNote = firebase.database().ref(`notes/${this.state.index}`);
     if(this.state.index != 0){
       currentNote.child("images").push({name: file.name});
-      storage.child(`images/${this.state.index}`).put(file).then(() => {
-        console.log(this.state.data[this.state.index].images)
+      storage.child(`images/${this.state.index}/${file.name}`).put(file).then(() => {
       });
     } else {
       console.log("no note selected");
     }
   };
   getImage = (image_name) => {
-    storage.child(`images/${this.state.index}`).getDownloadURL().then((url) => {
-      this.setState(prevState => ({imageURL:[...prevState.imageURLs, url]
-      }));
+    storage.child(`images/${this.state.index}/${image_name}`).getDownloadURL().then((url) => {
+      var joined = this.state.imageURLs.concat(url);
+      this.setState({imageURLs: joined});
     })
   }
   setImages = () => {
     const { data } = this.state;
+    this.setState({imageURLs:[]});
     if (data[this.state.index].images != null){
       Object.keys(data[this.state.index].images).map((key, index) => {
-        console.log(data[this.state.index].images[key].name);
         const image_name = data[this.state.index].images[key].name;
         this.getImage(image_name);
       });
