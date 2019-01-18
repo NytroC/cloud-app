@@ -53,6 +53,10 @@ class LoggedIn extends Component {
       data: {},
       imageURLs:[],
       progress: 0,
+      createNoteDisplay: "hidden-block",
+      addedCategory: '',
+      noteTitle: '',
+      noteBody: '',
     };
   }
   componentDidMount() {
@@ -74,12 +78,20 @@ class LoggedIn extends Component {
 
     return (
       <div id="main-container" class="container">
-        <div>
-          <button onClick={this.createOne}>Create New</button>
-          <button onClick={this.updateOne}>Update One</button>
-          <button onClick={this.deleteOne}>Delete One</button>
+      <div>
+        <table id ="notes-table" class="table table-striped table-dark">
+          <thead>
+            <tr>
+              <th scope="col">Notes</th>
+            </tr>
+          </thead>
+            {this.state.loaded ? this.renderTitles() : null}
+            <div>
+              <button id="create-button" onClick={this.displayCreateNote}>+</button>
+              <button id="delete-button" onClick={this.deleteOne}>-</button>
+            </div>
+          </table>
         </div>
-        {this.state.loaded ? this.renderTitles() : null}
         <div id="note-container"class="jumbotron">
           <h2>{data[this.state.index] ? JSON.stringify(data[this.state.index].title.replace(/"/g,"")): "Title"}</h2>
           <div id="note-body">
@@ -92,23 +104,30 @@ class LoggedIn extends Component {
             )
           })}
           <div class='form-upload'>
-            <input id="file-select" type='file' onChange={this.handleFileSelect}/>
-            <button id="upload-button" onClick={this.fileUpload}>Upload</button>
+            <input class="btn btn-dark" id="file-select" type='file' onChange={this.handleFileSelect}/>
+            <button class="btn btn-dark" id="upload-button" onClick={this.fileUpload}>Upload</button>
           </div>
         </div>
+        <form class="form-horizontal w-25" id={this.state.createNoteDisplay}>
+          <div class="form-group">
+            <label class="sr-only"/>
+            <input class="form-control" type="noteTitle" name="noteTitle" placeholder="Title" value={this.state.noteTitle} id="noteTitle" onChange={this.handleChange}/>
+          </div>
+          <div class="form-group">
+            <label class="sr-only"/>
+            <input class="form-control" type="text" name="noteBody" placeholder="Note" value={this.state.noteBody} id="noteBody" onChange={this.handleChange}/>
+          </div>
+          <div class="form-group">
+            <label class="sr-only"/>
+            <input class="btn btn-dark" type="submit" value="Submit" onClick={this.createNote}/>
+          </div>
+        </form>
       </div>
     );
   }
   renderTitles = () => {
    const { data } = this.state;
    return (
-     <div>
-       <table id ="notes-table" class="table table-striped table-dark">
-         <thead>
-           <tr>
-             <th scope="col">Notes</th>
-           </tr>
-         </thead>
        <tbody>
          {Object.keys(data).map((a, i) => {
            var index = a;
@@ -120,22 +139,43 @@ class LoggedIn extends Component {
            )
          })}
        </tbody>
-       </table>
-     </div>
    );
  };
+
+ handleChange = (e) => {
+   console.log("hey");
+   this.setState({
+     [e.target.name]: e.target.value
+   });
+ }
+
+ displayCreateNote = () => {
+   if(this.state.createNoteDisplay == "hidden-block" ) {
+     this.setState({createNoteDisplay: "shown-block"});
+   } else {
+     this.setState({createNoteDisplay: "hidden-block"});
+   }
+ }
  setIndex = async(e) => {
    e.preventDefault();
    await this.setState({index: e.target.value,currentNote: this.state.data[e.target.value]})
    this.setImages();
  }
-  createOne = () => {
+ createCategory = () => {
+   firebase.database().ref(`notes/${this.currentUser.uid}`).set({
+     title: this.state.addedCategory,
+   });
+   this.setState();
+ };
+  createNote = (e) => {
+    e.preventDefault();
     const id = uuid();
     firebase.database().ref(`notes/${this.currentUser.uid}/${id}`).set({
-      title: titles[Math.floor(Math.random() * Math.floor(titles.length))],
-      body: notes_body[Math.floor(Math.random() * Math.floor(notes_body.length))],
+      title: this.state.noteTitle,
+      body: this.state.noteBody,
       images: []
     });
+    this.displayCreateNote();
     this.setState();
   };
 
@@ -144,7 +184,7 @@ class LoggedIn extends Component {
     var first = Object.keys(this.state.data)[0];
     if(data.length > 1){
       firebase.database().ref(`notes/${this.currentUser.uid}/${first}`).remove();
-      storage.child(`images/${first}`).delete().then(() => {
+      storage.child(`images/${this.currentUser.uid}/${first}`).delete().then(() => {
 
       }).catch(err => {
         console.log(err);

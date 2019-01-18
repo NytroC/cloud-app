@@ -16,6 +16,7 @@ img{
 #notes-table{
   width: 28%;
   float: left;
+  text-align: center;
 }
 #note-container{
   width:70%;
@@ -43,7 +44,24 @@ img{
   height: 50px;
 
 }
+#create-button, #delete-button {
+  text-align: center;
+  display: inline-block;
+  margin: 4px 2px;
+  border-radius: 50%;
+}
+#delete-button{
+  float:right;
+}
 #upload-button{
   position: relative;
   float:left;
+}
+#hidden-block{
+  height: 0;
+  width: 0;
+  visibility: hidden;
+}
+#shown-block{
+  visibility: visible;
 }
