@@ -36,6 +36,16 @@ const storage = firebase.storage().ref();
 class LoggedIn extends Component {
   constructor(props) {
     super(props);
+    const user = firebase.auth().currentUser;
+    this.currentUser = {};
+
+     if (user != null) {
+       this.currentUser.name = user.displayName;
+       this.currentUser.email = user.email;
+       this.currentUser.photoUrl = user.photoURL;
+       this.currentUser.emailVerified = user.emailVerified;
+       this.currentUser.uid = user.uid;
+     }
     this.state = {
       loaded: false,
       index: 0,
@@ -45,7 +55,10 @@ class LoggedIn extends Component {
     };
   }
   componentDidMount() {
-    firebase.database().ref('notes/').on('value', snapShot => {
+    firebase.database().ref(`notes/${this.currentUser.uid}`).on('value', snapShot => {
+      if(snapShot.val() == null){
+        return;
+      }
       this.setState({ data: snapShot.val(), loaded: true })
     });
   }
@@ -109,7 +122,7 @@ class LoggedIn extends Component {
  }
   createOne = () => {
     const id = uuid();
-    firebase.database().ref(`notes/${id}`).set({
+    firebase.database().ref(`notes/${this.currentUser.uid}/${id}`).set({
       title: titles[Math.floor(Math.random() * Math.floor(titles.length))],
       body: notes_body[Math.floor(Math.random() * Math.floor(notes_body.length))],
       images: []
@@ -121,7 +134,7 @@ class LoggedIn extends Component {
     var data = Object.keys(this.state.data);
     var first = Object.keys(this.state.data)[0];
     if(data.length > 1){
-      firebase.database().ref(`notes/${first}`).remove();
+      firebase.database().ref(`notes/${this.currentUser.uid}/${first}`).remove();
       storage.child(`images/${first}`).delete().then(() => {
 
       }).catch(err => {
@@ -133,7 +146,7 @@ class LoggedIn extends Component {
 
   updateOne = () => {
     const first = Object.keys(this.state.data)[0];
-    firebase.database().ref(`notes/${first}`).update({
+    firebase.database().ref(`notes/${this.currentUser.uid}/${first}`).update({
       title: titles[Math.floor(Math.random() * Math.floor(titles.length))],
       body: notes_body[Math.floor(Math.random() * Math.floor(notes_body.length))]
     });
@@ -145,18 +158,19 @@ class LoggedIn extends Component {
 
   fileUpload = () => {
     const file = this.state.file;
-    const currentNote = firebase.database().ref(`notes/${this.state.index}`);
+    const currentNote = firebase.database().ref(`notes/${this.currentUser.uid}/${this.state.index}`);
     if(this.state.index != 0){
       currentNote.child("images").push({name: file.name});
-      storage.child(`images/${this.state.index}/${file.name}`).put(file).then(() => {
+      console.log(this.currentUser.uid);
+      storage.child(`images/${this.currentUser.uid}/${this.state.index}/${file.name}`).put(file).then(() => {
           this.setImages();
       });
     } else {
-      console.log("no note selected");
+      console.log("no note selected"); 
     }
   };
   getImage = (image_name) => {
-    storage.child(`images/${this.state.index}/${image_name}`).getDownloadURL().then((url) => {
+    storage.child(`images/${this.currentUser.uid}/${this.state.index}/${image_name}`).getDownloadURL().then((url) => {
       var joined = this.state.imageURLs.concat(url);
       this.setState({imageURLs: joined});
     })
