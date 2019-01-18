@@ -35,6 +35,15 @@ img{
   background: none;
   color: white;
 }
+#progress{
+  margin: 0 auto;
+  z-index: 100;
+  background: black;
+  color: white;
+  height: 50px;
+
+}
 #upload-button{
+  position: relative;
   float:left;
 }

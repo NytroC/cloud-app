@@ -52,6 +52,7 @@ class LoggedIn extends Component {
       file: '',
       data: {},
       imageURLs:[],
+      progress: 0,
     };
   }
   componentDidMount() {
@@ -64,6 +65,13 @@ class LoggedIn extends Component {
   }
 
   render() {
+    const { data } = this.state;
+    var {progress} = this.state;
+
+    var progressBar = {
+      width: `${progress}%`,
+    };
+
     return (
       <div id="main-container" class="container">
         <div>
@@ -72,6 +80,22 @@ class LoggedIn extends Component {
           <button onClick={this.deleteOne}>Delete One</button>
         </div>
         {this.state.loaded ? this.renderTitles() : null}
+        <div id="note-container"class="jumbotron">
+          <h2>{data[this.state.index] ? JSON.stringify(data[this.state.index].title.replace(/"/g,"")): "Title"}</h2>
+          <div id="note-body">
+             <p>{data[this.state.index] ? JSON.stringify(data[this.state.index].body): "Click Note"}</p>
+             <div id="progress" style={progressBar}>{progress}%</div>
+          </div>
+          {this.state.imageURLs.map((url) => {
+            return(
+              <img src={url}/>
+            )
+          })}
+          <div class='form-upload'>
+            <input id="file-select" type='file' onChange={this.handleFileSelect}/>
+            <button id="upload-button" onClick={this.fileUpload}>Upload</button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -97,21 +121,6 @@ class LoggedIn extends Component {
          })}
        </tbody>
        </table>
-       <div id="note-container"class="jumbotron">
-         <h2>{data[this.state.index] ? JSON.stringify(data[this.state.index].title.replace(/"/g,"")): "Title"}</h2>
-         <div id="note-body">
-            <p>{data[this.state.index] ? JSON.stringify(data[this.state.index].body): "Click Note"}</p>
-         </div>
-         {this.state.imageURLs.map((url) => {
-           return(
-             <img src={url}/>
-           )
-         })}
-         <div class='form-upload'>
-           <input id="file-select" type='file' onChange={this.handleFileSelect}/>
-           <button id="upload-button" onClick={this.fileUpload}>Upload</button>
-         </div>
-       </div>
      </div>
    );
  };
@@ -162,11 +171,23 @@ class LoggedIn extends Component {
     if(this.state.index != 0){
       currentNote.child("images").push({name: file.name});
       console.log(this.currentUser.uid);
-      storage.child(`images/${this.currentUser.uid}/${this.state.index}/${file.name}`).put(file).then(() => {
+      var imageUpload = storage.child(`images/${this.currentUser.uid}/${this.state.index}/${file.name}`).put(file);
+      imageUpload.on('state_changed',
+        (snapshot) => {
+          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          this.setState({progress: Math.round(progress)});
+          console.log('Upload is ' + progress + '% done');
+        },
+        function(error){
+          alert(`ERROR: ${error}`);
+        },
+        () => {
           this.setImages();
-      });
+          this.setState({progress: 0})
+        }
+      );
     } else {
-      console.log("no note selected"); 
+      console.log("no note selected");
     }
   };
   getImage = (image_name) => {
