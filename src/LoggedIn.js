@@ -143,7 +143,6 @@ class LoggedIn extends Component {
  };
 
  handleChange = (e) => {
-   console.log("hey");
    this.setState({
      [e.target.name]: e.target.value
    });
@@ -210,13 +209,11 @@ class LoggedIn extends Component {
     const currentNote = firebase.database().ref(`notes/${this.currentUser.uid}/${this.state.index}`);
     if(this.state.index != 0){
       currentNote.child("images").push({name: file.name});
-      console.log(this.currentUser.uid);
       var imageUpload = storage.child(`images/${this.currentUser.uid}/${this.state.index}/${file.name}`).put(file);
       imageUpload.on('state_changed',
         (snapshot) => {
           var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           this.setState({progress: Math.round(progress)});
-          console.log('Upload is ' + progress + '% done');
         },
         function(error){
           alert(`ERROR: ${error}`);
